@@ -7,6 +7,7 @@ const QuizScreen: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
   const [quizComplete, setQuizComplete] = useState(false);
   const [score, setScore] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0); // ✅ thêm state đếm số câu đúng
 
   const currentQuestion = state.currentQuiz[state.currentQuestionIndex];
   const isLastQuestion = state.currentQuestionIndex >= state.currentQuiz.length - 1;
@@ -33,21 +34,24 @@ const QuizScreen: React.FC = () => {
     dispatch({ type: 'SELECT_ANSWER', payload: answerIndex });
   };
 
+  const pointsByDifficulty = (difficulty?: string) =>
+    difficulty === 'easy' ? 10 : difficulty === 'medium' ? 20 : 30;
+
   const handleNext = () => {
     let isCorrect = false;
-    
+
     if (currentQuestion.type === 'multiple_choice') {
       isCorrect = state.selectedAnswer === currentQuestion.correctAnswer;
     } else if (currentQuestion.type === 'true_false') {
       isCorrect = state.selectedAnswer === currentQuestion.correctAnswer;
     } else {
-      // For short answer, we'll consider it correct for demo purposes
+      // short answer (demo)
       isCorrect = true;
     }
 
     if (isCorrect) {
-      const points = currentQuestion.difficulty === 'easy' ? 10 : 
-                     currentQuestion.difficulty === 'medium' ? 20 : 30;
+      setCorrectCount(prev => prev + 1); // ✅ tăng số câu đúng
+      const points = pointsByDifficulty(currentQuestion.difficulty);
       setScore(prev => prev + points);
     }
 
@@ -75,34 +79,41 @@ const QuizScreen: React.FC = () => {
   const retakeQuiz = () => {
     setQuizComplete(false);
     setScore(0);
+    setCorrectCount(0); // ✅ reset số câu đúng
     setTimeLeft(600);
     dispatch({ type: 'START_QUIZ', payload: state.currentQuiz });
   };
 
   if (quizComplete) {
-    const percentage = Math.round((score / (state.currentQuiz.length * 30)) * 100);
-    const correctAnswers = Math.round(score / (state.currentQuiz.length > 0 ? (score / percentage * 100) : 1));
-    
+    // ✅ tổng điểm tối đa tính theo độ khó từng câu
+    const totalPossible = state.currentQuiz.reduce(
+      (sum: number, q: any) => sum + pointsByDifficulty(q.difficulty),
+      0
+    );
+    const percentage = totalPossible > 0 ? Math.round((score / totalPossible) * 100) : 0;
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-50 to-green-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl p-8 shadow-2xl max-w-md w-full text-center">
-          <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
-            percentage >= 70 ? 'bg-green-500' : percentage >= 50 ? 'bg-yellow-500' : 'bg-red-500'
-          }`}>
+          <div
+            className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
+              percentage >= 70 ? 'bg-green-500' : percentage >= 50 ? 'bg-yellow-500' : 'bg-red-500'
+            }`}
+          >
             {percentage >= 70 ? (
               <CheckCircle className="w-10 h-10 text-white" />
             ) : (
               <XCircle className="w-10 h-10 text-white" />
             )}
           </div>
-          
+
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
             {percentage >= 70 ? 'Xuất sắc!' : percentage >= 50 ? 'Khá tốt!' : 'Cần cố gắng thêm!'}
           </h2>
-          
+
           <div className="text-5xl font-bold text-teal-600 mb-2">{score}</div>
           <p className="text-gray-600 mb-6">điểm đã kiếm được</p>
-          
+
           <div className="bg-gray-50 rounded-xl p-4 mb-6 space-y-2">
             <div className="flex justify-between">
               <span className="text-gray-600">Tổng câu hỏi:</span>
@@ -110,11 +121,15 @@ const QuizScreen: React.FC = () => {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Trả lời đúng:</span>
-              <span className="font-semibold text-green-600">{correctAnswers}</span>
+              <span className="font-semibold text-green-600">{correctCount}</span> {/* ✅ đúng thật */}
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Độ chính xác:</span>
-              <span className="font-semibold text-teal-600">{percentage}%</span>
+              <span className="text-gray-600">Điểm tối đa có thể đạt:</span>
+              <span className="font-semibold">{totalPossible}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">% hoàn thành:</span>
+              <span className="font-semibold">{percentage}%</span>
             </div>
           </div>
 
@@ -175,10 +190,10 @@ const QuizScreen: React.FC = () => {
               <div className="text-teal-600 font-bold">{score} điểm</div>
             </div>
           </div>
-          
+
           {/* Progress Bar */}
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-teal-500 h-2 rounded-full transition-all duration-300"
               style={{ width: `${((state.currentQuestionIndex + 1) / state.currentQuiz.length) * 100}%` }}
             ></div>
@@ -189,17 +204,27 @@ const QuizScreen: React.FC = () => {
         <div className="bg-white rounded-2xl p-8 shadow-lg border border-teal-100">
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                currentQuestion.difficulty === 'easy' ? 'bg-green-100 text-green-800' :
-                currentQuestion.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                'bg-red-100 text-red-800'
-              }`}>
-                {currentQuestion.difficulty === 'easy' ? 'Dễ' : 
-                 currentQuestion.difficulty === 'medium' ? 'Trung bình' : 'Khó'}
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  currentQuestion.difficulty === 'easy'
+                    ? 'bg-green-100 text-green-800'
+                    : currentQuestion.difficulty === 'medium'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-red-100 text-red-800'
+                }`}
+              >
+                {currentQuestion.difficulty === 'easy'
+                  ? 'Dễ'
+                  : currentQuestion.difficulty === 'medium'
+                  ? 'Trung bình'
+                  : 'Khó'}
               </span>
               <span className="text-sm text-gray-500">
-                {currentQuestion.type === 'multiple_choice' ? 'Trắc nghiệm' :
-                 currentQuestion.type === 'true_false' ? 'Đúng/Sai' : 'Tự luận ngắn'}
+                {currentQuestion.type === 'multiple_choice'
+                  ? 'Trắc nghiệm'
+                  : currentQuestion.type === 'true_false'
+                  ? 'Đúng/Sai'
+                  : 'Tự luận ngắn'}
               </span>
             </div>
             <h2 className="text-2xl font-bold text-gray-800 leading-tight">
@@ -211,14 +236,14 @@ const QuizScreen: React.FC = () => {
           <div className="space-y-3 mb-8">
             {currentQuestion.type === 'short_answer' ? (
               <textarea
-                value={state.selectedAnswer as string || ''}
+                value={(state.selectedAnswer as string) || ''}
                 onChange={(e) => handleAnswer(e.target.value)}
                 placeholder="Nhập câu trả lời của bạn..."
                 className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:outline-none resize-none h-32"
                 disabled={state.showExplanation}
               />
             ) : (
-              currentQuestion.options?.map((option, index) => (
+              currentQuestion.options?.map((option: string, index: number) => (
                 <button
                   key={index}
                   onClick={() => handleAnswer(index)}
@@ -236,28 +261,29 @@ const QuizScreen: React.FC = () => {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                      isSelectedAnswer(index)
-                        ? state.showExplanation
-                          ? isCorrectAnswer(index)
-                            ? 'bg-green-500 text-white'
-                            : 'bg-red-500 text-white'
-                          : 'bg-teal-500 text-white'
-                        : state.showExplanation && isCorrectAnswer(index)
-                        ? 'bg-green-500 text-white'
-                        : 'bg-gray-200 text-gray-600'
-                    }`}>
-                      {currentQuestion.type === 'true_false' 
-                        ? (index === 0 ? 'Đ' : 'S')
-                        : String.fromCharCode(65 + index)
-                      }
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                        isSelectedAnswer(index)
+                          ? state.showExplanation
+                            ? isCorrectAnswer(index)
+                              ? 'bg-green-500 text-white'
+                              : 'bg-red-500 text-white'
+                            : 'bg-teal-500 text-white'
+                          : state.showExplanation && isCorrectAnswer(index)
+                          ? 'bg-green-500 text-white'
+                          : 'bg-gray-200 text-gray-600'
+                      }`}
+                    >
+                      {currentQuestion.type === 'true_false'
+                        ? index === 0
+                          ? 'Đ'
+                          : 'S'
+                        : String.fromCharCode(65 + index)}
                     </div>
                     <span className="font-medium">{option}</span>
                     {state.showExplanation && (
                       <>
-                        {isCorrectAnswer(index) && (
-                          <CheckCircle className="w-5 h-5 text-green-500 ml-auto" />
-                        )}
+                        {isCorrectAnswer(index) && <CheckCircle className="w-5 h-5 text-green-500 ml-auto" />}
                         {isSelectedAnswer(index) && !isCorrectAnswer(index) && (
                           <XCircle className="w-5 h-5 text-red-500 ml-auto" />
                         )}

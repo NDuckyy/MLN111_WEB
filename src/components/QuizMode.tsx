@@ -13,14 +13,14 @@ const QuizMode: React.FC = () => {
 
   const startQuiz = (difficulty: 'all' | 'easy' | 'medium' | 'hard' = 'all') => {
     let filteredQuestions = quizQuestions;
-    
+
     if (difficulty !== 'all') {
       filteredQuestions = quizQuestions.filter(q => q.difficulty === difficulty);
     }
-    
+
     // Shuffle questions
     const shuffledQuestions = [...filteredQuestions].sort(() => Math.random() - 0.5);
-    
+
     dispatch({ type: 'START_QUIZ', payload: shuffledQuestions });
     dispatch({ type: 'SET_SCREEN', payload: 'quiz' });
   };
@@ -160,14 +160,14 @@ const QuizMode: React.FC = () => {
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-sm font-medium text-gray-500">Câu {index + 1}</span>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(question.difficulty)}`}>
-                        {question.difficulty === 'easy' ? 'Dễ' : 
-                         question.difficulty === 'medium' ? 'Trung bình' : 'Khó'}
+                        {question.difficulty === 'easy' ? 'Dễ' :
+                          question.difficulty === 'medium' ? 'Trung bình' : 'Khó'}
                       </span>
                     </div>
                     <p className="text-gray-800 font-medium mb-2">{question.question}</p>
                     <p className="text-sm text-gray-600">
-                      Loại: {question.type === 'multiple_choice' ? 'Trắc nghiệm' : 
-                             question.type === 'true_false' ? 'Đúng/Sai' : 'Tự luận ngắn'}
+                      Loại: {question.type === 'multiple_choice' ? 'Trắc nghiệm' :
+                        question.type === 'true_false' ? 'Đúng/Sai' : 'Tự luận ngắn'}
                     </p>
                   </div>
                 ))}
@@ -190,13 +190,6 @@ const QuizMode: React.FC = () => {
                   <span className="font-bold text-teal-600">{state.user.totalScore}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Điểm trung bình:</span>
-                  <span className="font-bold text-teal-600">
-                    {state.user.quizResults.length > 0 
-                      ? Math.round(state.user.quizResults.reduce((sum, result) => 
-                          sum + (result.score / result.totalQuestions * 100), 0) / state.user.quizResults.length)
-                      : 0}%
-                  </span>
                 </div>
               </div>
             </div>
@@ -204,21 +197,19 @@ const QuizMode: React.FC = () => {
             {/* Recent Results */}
             {recentResults.length > 0 && (
               <div className="bg-white rounded-2xl p-6 shadow-lg border border-teal-100">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Kết Quả Gần Đây</h3>
+                <h3 className="text-xl font-bold text-gray-800 mb-4">Quiz Gần Đây</h3>
                 <div className="space-y-3">
                   {recentResults.map((result, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-teal-50 rounded-lg">
                       <div>
                         <div className="font-medium text-gray-800">
-                          {result.score}/{result.totalQuestions}
+                          {result.score} điểm
                         </div>
-                        <div className="text-sm text-gray-600">
-                          {result.completedAt.toLocaleDateString('vi-VN')}
-                        </div>
+
                       </div>
                       <div className="text-right">
-                        <div className="font-bold text-teal-600">
-                          {Math.round((result.score / result.totalQuestions) * 100)}%
+                        <div className="text-sm text-gray-600">
+                          {result.completedAt.toLocaleDateString('vi-VN')}
                         </div>
                       </div>
                     </div>

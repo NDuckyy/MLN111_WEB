@@ -9,7 +9,7 @@ const ProfileScreen: React.FC = () => {
     dispatch({ type: 'SET_SCREEN', payload: 'home' });
   };
 
-  const averageScore = state.user.quizResults.length > 0 
+  const averageScore = state.user.quizResults.length > 0
     ? Math.round(state.user.quizResults.reduce((sum, result) => sum + (result.score / result.totalQuestions * 100), 0) / state.user.quizResults.length)
     : 0;
 
@@ -73,7 +73,7 @@ const ProfileScreen: React.FC = () => {
                 <span className="font-medium">{state.user.studyProgress.sectionsRead.length}/3 phần</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
+                <div
                   className="bg-indigo-500 h-2 rounded-full transition-all duration-500"
                   style={{ width: `${(state.user.studyProgress.sectionsRead.length / 3) * 100}%` }}
                 ></div>
@@ -85,9 +85,9 @@ const ProfileScreen: React.FC = () => {
         {/* Statistics */}
         <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
           <h3 className="text-xl font-bold text-gray-800 mb-6">Thống Kê Học Tập</h3>
-          
+
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
             <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
               <div className="text-3xl font-bold text-blue-600">{state.user.totalScore}</div>
               <div className="text-sm text-gray-600">Tổng điểm</div>
@@ -95,10 +95,6 @@ const ProfileScreen: React.FC = () => {
             <div className="text-center p-4 bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl">
               <div className="text-3xl font-bold text-teal-600">{state.user.quizResults.length}</div>
               <div className="text-sm text-gray-600">Quiz hoàn thành</div>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
-              <div className="text-3xl font-bold text-purple-600">{averageScore}%</div>
-              <div className="text-sm text-gray-600">Điểm trung bình</div>
             </div>
             <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl">
               <div className="text-3xl font-bold text-orange-600">{totalQuestionsAnswered}</div>
@@ -120,12 +116,12 @@ const ProfileScreen: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Trả lời đúng:</span>
-                  <span className="font-semibold text-green-600">{totalCorrectAnswers}</span>
+                  <span className="font-semibold text-green-600">{state.user.quizResults.length}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tỷ lệ chính xác:</span>
                   <span className="font-semibold text-teal-600">
-                    {totalQuestionsAnswered > 0 ? Math.round((totalCorrectAnswers / totalQuestionsAnswered) * 100) : 0}%
+                    {totalQuestionsAnswered > 0 ? Math.round((state.user.quizResults.length / totalQuestionsAnswered) * 100) : 0}%
                   </span>
                 </div>
               </div>
@@ -169,17 +165,11 @@ const ProfileScreen: React.FC = () => {
                       <div className="font-medium text-gray-800">
                         Quiz Triết Học
                       </div>
-                      <div className="text-sm text-gray-600">
-                        {result.completedAt.toLocaleDateString('vi-VN')} • {result.completedAt.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
-                      </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-teal-600 text-lg">
-                      {result.score}/{result.totalQuestions}
-                    </div>
                     <div className="text-sm text-gray-600">
-                      {Math.round((result.score / result.totalQuestions) * 100)}% chính xác
+                      {result.completedAt.toLocaleDateString('vi-VN')} • {result.completedAt.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
                 </div>

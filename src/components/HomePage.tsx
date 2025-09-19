@@ -20,7 +20,7 @@ const HomePage: React.FC = () => {
   };
 
   const completionRate = Math.round((state.user.studyProgress.sectionsRead.length / 3) * 100);
-  const averageScore = state.user.quizResults.length > 0 
+  const averageScore = state.user.quizResults.length > 0
     ? Math.round(state.user.quizResults.reduce((sum, result) => sum + (result.score / result.totalQuestions * 100), 0) / state.user.quizResults.length)
     : 0;
 
@@ -33,7 +33,7 @@ const HomePage: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-800">Triết Học AI</h1>
             <p className="text-sm text-gray-600">Xin chào, {state.user.username}!</p>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-full">
               <Trophy className="w-4 h-4 text-yellow-600" />
@@ -56,7 +56,7 @@ const HomePage: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-800 mb-2">Chương Đang Học</h2>
             <h3 className="text-xl text-indigo-600 font-semibold mb-4">{studyContent.title}</h3>
             <p className="text-gray-600 mb-4">II. Phép biện chứng duy vật - Các quy luật cơ bản</p>
-            
+
             {/* Progress Bar */}
             <div className="max-w-md mx-auto">
               <div className="flex justify-between text-sm text-gray-600 mb-2">
@@ -64,7 +64,7 @@ const HomePage: React.FC = () => {
                 <span>{completionRate}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3">
-                <div 
+                <div
                   className="bg-gradient-to-r from-indigo-500 to-blue-600 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${completionRate}%` }}
                 ></div>
@@ -94,7 +94,7 @@ const HomePage: React.FC = () => {
                 </div>
                 <h3 className="text-2xl font-bold mb-4">Study Mode</h3>
                 <p className="text-indigo-50 mb-6 leading-relaxed">
-                  Đọc nội dung lý thuyết với sự hỗ trợ của AI. Nhận giải thích, 
+                  Đọc nội dung lý thuyết với sự hỗ trợ của AI. Nhận giải thích,
                   ví dụ thực tiễn và câu hỏi gợi mở để hiểu sâu hơn.
                 </p>
                 <div className="bg-white/20 rounded-lg p-4 text-sm">
@@ -122,7 +122,7 @@ const HomePage: React.FC = () => {
                 </div>
                 <h3 className="text-2xl font-bold mb-4">Quiz Mode</h3>
                 <p className="text-teal-50 mb-6 leading-relaxed">
-                  Kiểm tra kiến thức với các câu hỏi đa dạng. Nhận điểm ngay 
+                  Kiểm tra kiến thức với các câu hỏi đa dạng. Nhận điểm ngay
                   và xem giải thích chi tiết từ AI.
                 </p>
                 <div className="bg-white/20 rounded-lg p-4 text-sm">
@@ -175,17 +175,11 @@ const HomePage: React.FC = () => {
                       </div>
                       <div>
                         <div className="font-medium text-gray-800">Quiz hoàn thành</div>
-                        <div className="text-sm text-gray-600">
-                          {result.completedAt.toLocaleDateString('vi-VN')}
-                        </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold text-teal-600">
-                        {result.score}/{result.totalQuestions}
-                      </div>
                       <div className="text-sm text-gray-600">
-                        {Math.round((result.score / result.totalQuestions) * 100)}%
+                        {result.completedAt.toLocaleDateString('vi-VN')}
                       </div>
                     </div>
                   </div>

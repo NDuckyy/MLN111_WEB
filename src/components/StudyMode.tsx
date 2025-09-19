@@ -6,18 +6,18 @@ import { aiSampleResponses } from '../data/studyContent';
 const StudyMode: React.FC = () => {
   const { state, dispatch } = useApp();
   const [userQuestion, setUserQuestion] = useState('');
-  const [chatMessages, setChatMessages] = useState<Array<{type: 'user' | 'ai', content: string}>>([
-    { 
-      type: 'ai', 
-      content: 'Xin chào! Tôi là AI hỗ trợ học tập. Bạn có thể hỏi tôi về bất kỳ khái niệm nào trong bài học, hoặc yêu cầu tôi giải thích, đưa ví dụ thực tiễn. Hãy bắt đầu học nhé!' 
+  const [chatMessages, setChatMessages] = useState<Array<{ type: 'user' | 'ai', content: string }>>([
+    {
+      type: 'ai',
+      content: 'Xin chào! Tôi là AI hỗ trợ học tập. Bạn có thể hỏi tôi về bất kỳ khái niệm nào trong bài học, hoặc yêu cầu tôi giải thích, đưa ví dụ thực tiễn. Hãy bắt đầu học nhé!'
     }
   ]);
   const [currentSection, setCurrentSection] = useState(0);
 
   const sections = [
-    'Quy luật thống nhất và đấu tranh của các mặt đối lập',
-    'Quy luật chuyển hóa từ những thay đổi về lượng thành những thay đổi về chất',
-    'Quy luật phủ định của phủ định'
+    'AI và con người: Thống nhất và đối lập',
+    'AI phát triển: Từ lượng đến chất',
+    'AI và con người trong quy luật phủ định của phủ định'
   ];
 
   useEffect(() => {
@@ -25,8 +25,8 @@ const StudyMode: React.FC = () => {
     const timer = setTimeout(() => {
       const sectionId = `section-${currentSection}`;
       if (!state.user.studyProgress.sectionsRead.includes(sectionId)) {
-        dispatch({ 
-          type: 'UPDATE_USER', 
+        dispatch({
+          type: 'UPDATE_USER',
           payload: {
             studyProgress: {
               ...state.user.studyProgress,
@@ -47,16 +47,16 @@ const StudyMode: React.FC = () => {
 
   const sendMessage = () => {
     if (!userQuestion.trim()) return;
-    
+
     const newMessages = [
       ...chatMessages,
       { type: 'user' as const, content: userQuestion }
     ];
-    
+
     // Simple AI responses based on keywords
     let aiResponse = '';
     const question = userQuestion.toLowerCase();
-    
+
     if (question.includes('mâu thuẫn') || question.includes('đối lập')) {
       aiResponse = aiSampleResponses.explanations[0];
     } else if (question.includes('lượng') || question.includes('chất') || question.includes('độ')) {
@@ -68,11 +68,11 @@ const StudyMode: React.FC = () => {
     } else {
       aiResponse = 'Đó là một câu hỏi hay! Hãy để tôi giải thích chi tiết hơn. Bạn có thể hỏi cụ thể về khái niệm nào trong bài học không?';
     }
-    
+
     setTimeout(() => {
       setChatMessages([...newMessages, { type: 'ai', content: aiResponse }]);
     }, 1000);
-    
+
     setChatMessages(newMessages);
     setUserQuestion('');
   };
@@ -122,30 +122,18 @@ const StudyMode: React.FC = () => {
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
                 {state.currentStudyContent.title}
               </h2>
-              <div className="flex gap-2">
-                {sections.map((section, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSection(index)}
-                    className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                      currentSection === index
-                        ? 'bg-indigo-500 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-              </div>
             </div>
-            
-            <div className="p-6">
-              <div 
-                className="prose prose-lg max-w-none"
-                dangerouslySetInnerHTML={{ 
-                  __html: state.currentStudyContent.content.replace(/\n/g, '<br>') 
-                }}
-              />
+
+            <div className="p-6 space-y-8">
+              {state.currentStudyContent.sections.map((section: any, idx: number) => (
+                <div key={idx} className="space-y-3">
+                  <h3 className="text-xl font-semibold text-indigo-700">{section.title}</h3>
+                  <div
+                    className="text-gray-700 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{ __html: section.content }}
+                  />
+                </div>
+              ))}
             </div>
           </div>
 
@@ -176,21 +164,20 @@ const StudyMode: React.FC = () => {
                 Hỏi AI
               </h3>
             </div>
-            
+
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {chatMessages.map((msg, index) => (
                 <div key={index} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-xs px-4 py-2 rounded-2xl ${
-                    msg.type === 'user'
-                      ? 'bg-indigo-500 text-white'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
+                  <div className={`max-w-xs px-4 py-2 rounded-2xl ${msg.type === 'user'
+                    ? 'bg-indigo-500 text-white'
+                    : 'bg-gray-100 text-gray-800'
+                    }`}>
                     <div className="text-sm">{msg.content}</div>
                   </div>
                 </div>
               ))}
             </div>
-            
+
             <div className="p-4 border-t border-indigo-100">
               <div className="flex gap-2">
                 <input

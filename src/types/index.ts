@@ -25,7 +25,10 @@ export interface QuizResult {
 export interface StudyContent {
   id: string;
   title: string;
-  content: string;
+  sections: Array<{
+    title: string;
+    content: string;
+  }>;
   keyPoints: string[];
   examples: string[];
   relatedConcepts: string[];
