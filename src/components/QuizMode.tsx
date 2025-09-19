@@ -7,20 +7,22 @@ const QuizMode: React.FC = () => {
   const { state, dispatch } = useApp();
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'easy' | 'medium' | 'hard'>('all');
 
+  // ✅ Helper: format Date an toàn (Date | string | null)
+  const formatVNDate = (value: any) => {
+    const d = value instanceof Date ? value : value ? new Date(value) : null;
+    return d && !isNaN(d.getTime()) ? d.toLocaleDateString('vi-VN') : 'Chưa có';
+  };
+
   const goBack = () => {
     dispatch({ type: 'SET_SCREEN', payload: 'home' });
   };
 
   const startQuiz = (difficulty: 'all' | 'easy' | 'medium' | 'hard' = 'all') => {
     let filteredQuestions = quizQuestions;
-
     if (difficulty !== 'all') {
       filteredQuestions = quizQuestions.filter(q => q.difficulty === difficulty);
     }
-
-    // Shuffle questions
     const shuffledQuestions = [...filteredQuestions].sort(() => Math.random() - 0.5);
-
     dispatch({ type: 'START_QUIZ', payload: shuffledQuestions });
     dispatch({ type: 'SET_SCREEN', payload: 'quiz' });
   };
@@ -70,7 +72,7 @@ const QuizMode: React.FC = () => {
           </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {/* All Questions */}
+            {/* All */}
             <div
               onClick={() => startQuiz('all')}
               className="group bg-gradient-to-br from-teal-500 to-green-600 rounded-2xl p-6 cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-2xl"
@@ -83,13 +85,11 @@ const QuizMode: React.FC = () => {
                 <p className="text-teal-50 text-sm mb-4">
                   {quizQuestions.length} câu hỏi
                 </p>
-                <div className="bg-white/20 rounded-lg p-2 text-xs">
-                  Tổng hợp tất cả mức độ
-                </div>
+                <div className="bg-white/20 rounded-lg p-2 text-xs">Tổng hợp tất cả mức độ</div>
               </div>
             </div>
 
-            {/* Easy Quiz */}
+            {/* Easy */}
             <div
               onClick={() => startQuiz('easy')}
               className="group bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl p-6 cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-2xl"
@@ -102,13 +102,11 @@ const QuizMode: React.FC = () => {
                 <p className="text-green-50 text-sm mb-4">
                   {quizQuestions.filter(q => q.difficulty === 'easy').length} câu hỏi
                 </p>
-                <div className="bg-white/20 rounded-lg p-2 text-xs">
-                  Khái niệm cơ bản
-                </div>
+                <div className="bg-white/20 rounded-lg p-2 text-xs">Khái niệm cơ bản</div>
               </div>
             </div>
 
-            {/* Medium Quiz */}
+            {/* Medium */}
             <div
               onClick={() => startQuiz('medium')}
               className="group bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl p-6 cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-2xl"
@@ -121,13 +119,11 @@ const QuizMode: React.FC = () => {
                 <p className="text-yellow-50 text-sm mb-4">
                   {quizQuestions.filter(q => q.difficulty === 'medium').length} câu hỏi
                 </p>
-                <div className="bg-white/20 rounded-lg p-2 text-xs">
-                  Hiểu biết sâu hơn
-                </div>
+                <div className="bg-white/20 rounded-lg p-2 text-xs">Hiểu biết sâu hơn</div>
               </div>
             </div>
 
-            {/* Hard Quiz */}
+            {/* Hard */}
             <div
               onClick={() => startQuiz('hard')}
               className="group bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl p-6 cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-2xl"
@@ -140,15 +136,13 @@ const QuizMode: React.FC = () => {
                 <p className="text-red-50 text-sm mb-4">
                   {quizQuestions.filter(q => q.difficulty === 'hard').length} câu hỏi
                 </p>
-                <div className="bg-white/20 rounded-lg p-2 text-xs">
-                  Thử thách bản thân
-                </div>
+                <div className="bg-white/20 rounded-lg p-2 text-xs">Thử thách bản thân</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Quiz Preview */}
+        {/* Quiz Preview & Recent */}
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Question Preview */}
           <div className="lg:col-span-2">
@@ -159,15 +153,26 @@ const QuizMode: React.FC = () => {
                   <div key={question.id} className="border border-gray-200 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-sm font-medium text-gray-500">Câu {index + 1}</span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(question.difficulty)}`}>
-                        {question.difficulty === 'easy' ? 'Dễ' :
-                          question.difficulty === 'medium' ? 'Trung bình' : 'Khó'}
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(
+                          question.difficulty
+                        )}`}
+                      >
+                        {question.difficulty === 'easy'
+                          ? 'Dễ'
+                          : question.difficulty === 'medium'
+                          ? 'Trung bình'
+                          : 'Khó'}
                       </span>
                     </div>
                     <p className="text-gray-800 font-medium mb-2">{question.question}</p>
                     <p className="text-sm text-gray-600">
-                      Loại: {question.type === 'multiple_choice' ? 'Trắc nghiệm' :
-                        question.type === 'true_false' ? 'Đúng/Sai' : 'Tự luận ngắn'}
+                      Loại:{' '}
+                      {question.type === 'multiple_choice'
+                        ? 'Trắc nghiệm'
+                        : question.type === 'true_false'
+                        ? 'Đúng/Sai'
+                        : 'Tự luận ngắn'}
                     </p>
                   </div>
                 ))}
@@ -189,8 +194,6 @@ const QuizMode: React.FC = () => {
                   <span className="text-gray-600">Tổng điểm:</span>
                   <span className="font-bold text-teal-600">{state.user.totalScore}</span>
                 </div>
-                <div className="flex justify-between items-center">
-                </div>
               </div>
             </div>
 
@@ -202,14 +205,12 @@ const QuizMode: React.FC = () => {
                   {recentResults.map((result, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-teal-50 rounded-lg">
                       <div>
-                        <div className="font-medium text-gray-800">
-                          {result.score} điểm
-                        </div>
-
+                        <div className="font-medium text-gray-800">{result.score} điểm</div>
                       </div>
                       <div className="text-right">
                         <div className="text-sm text-gray-600">
-                          {result.completedAt.toLocaleDateString('vi-VN')}
+                          {/* ✅ dùng formatter an toàn thay cho toLocaleDateString trực tiếp */}
+                          {formatVNDate(result.completedAt)}
                         </div>
                       </div>
                     </div>
