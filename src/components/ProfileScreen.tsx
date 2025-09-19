@@ -25,16 +25,16 @@ const ProfileScreen: React.FC = () => {
   const averageScore =
     state.user.quizResults.length > 0
       ? Math.round(
-          state.user.quizResults.reduce((sum, r) => {
-            const percent =
-              r.totalPossible && r.totalPossible > 0
-                ? (r.score / r.totalPossible) * 100
-                : r.totalQuestions && r.totalQuestions > 0
+        state.user.quizResults.reduce((sum, r) => {
+          const percent =
+            r.totalPossible && r.totalPossible > 0
+              ? (r.score / r.totalPossible) * 100
+              : r.totalQuestions && r.totalQuestions > 0
                 ? (r.score / (r.totalQuestions * 30)) * 100 // fallback cũ
                 : 0;
-            return sum + percent;
-          }, 0) / state.user.quizResults.length
-        )
+          return sum + percent;
+        }, 0) / state.user.quizResults.length
+      )
       : 0;
 
   const totalQuestionsAnswered = state.user.quizResults.reduce(
@@ -84,7 +84,12 @@ const ProfileScreen: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-1">
                   <Target className="w-4 h-4" />
-                  <span>{state.user.totalScore + 10} điểm</span>
+                  {state.user.totalScore === 0 ? (
+                    <span>{state.user.totalScore} điểm</span>
+                  ) : (
+                    <span>{state.user.totalScore + 10} điểm</span>
+                  )
+                  }
                 </div>
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
@@ -127,7 +132,12 @@ const ProfileScreen: React.FC = () => {
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
             <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
-              <div className="text-3xl font-bold text-blue-600">{state.user.totalScore + 10}</div>
+              {state.user.totalScore === 0 ? (
+                <div className="text-3xl font-bold text-blue-600">{state.user.totalScore}</div>
+              ) : (
+                <div className="text-3xl font-bold text-blue-600">{state.user.totalScore + 10}</div>
+              )
+              }
               <div className="text-sm text-gray-600">Tổng điểm</div>
             </div>
             <div className="text-center p-4 bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl">
@@ -150,7 +160,12 @@ const ProfileScreen: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tổng điểm</span>
-                  <span className="font-semibold text-teal-600">{state.user.totalScore + 10}</span>
+                  {state.user.totalScore === 0 ? (
+                    <span className="font-semibold text-teal-600">{state.user.totalScore}</span>
+                  ) : (
+                    <span className="font-semibold text-teal-600">{state.user.totalScore + 10}</span>
+                  )
+                  }
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tổng câu hỏi:</span>

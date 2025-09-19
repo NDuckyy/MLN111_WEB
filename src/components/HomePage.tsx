@@ -1,10 +1,16 @@
 import React from 'react';
 import { useApp } from '../contexts/AppContext';
-import { BookOpen, Brain, User, Trophy, Clock, Target } from 'lucide-react';
+import { BookOpen, Brain, User, Trophy } from 'lucide-react';
 import { studyContent } from '../data/studyContent';
 
 const HomePage: React.FC = () => {
   const { state, dispatch } = useApp();
+
+  // ✅ Helper: format Date an toàn cho cả Date/string/null
+  const formatVNDate = (value: any) => {
+    const d = value instanceof Date ? value : value ? new Date(value) : null;
+    return d && !isNaN(d.getTime()) ? d.toLocaleDateString('vi-VN') : 'Chưa có';
+  };
 
   const startStudyMode = () => {
     dispatch({ type: 'SET_STUDY_CONTENT', payload: studyContent });
@@ -20,9 +26,15 @@ const HomePage: React.FC = () => {
   };
 
   const completionRate = Math.round((state.user.studyProgress.sectionsRead.length / 3) * 100);
-  const averageScore = state.user.quizResults.length > 0
-    ? Math.round(state.user.quizResults.reduce((sum, result) => sum + (result.score / result.totalQuestions * 100), 0) / state.user.quizResults.length)
-    : 0;
+  const averageScore =
+    state.user.quizResults.length > 0
+      ? Math.round(
+          state.user.quizResults.reduce(
+            (sum, result) => sum + (result.score / result.totalQuestions) * 100,
+            0
+          ) / state.user.quizResults.length
+        )
+      : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -37,7 +49,11 @@ const HomePage: React.FC = () => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-full">
               <Trophy className="w-4 h-4 text-yellow-600" />
-              <span className="font-medium text-yellow-800">{state.user.totalScore + 10} điểm</span>
+              {state.user.totalScore === 0 ? (
+                <span className="font-medium text-yellow-800">{state.user.totalScore} điểm</span>
+              ) : (
+                <span className="font-medium text-yellow-800">{state.user.totalScore + 10} điểm</span>
+              )}
             </div>
             <button
               onClick={goToProfile}
@@ -144,7 +160,11 @@ const HomePage: React.FC = () => {
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
           <div className="bg-white rounded-xl p-4 text-center shadow-md">
-            <div className="text-2xl font-bold text-indigo-600">{state.user.totalScore + 10}</div>
+            {state.user.totalScore === 0 ? (
+              <div className="text-2xl font-bold text-indigo-600">{state.user.totalScore}</div>
+            ) : (
+              <div className="text-2xl font-bold text-indigo-600">{state.user.totalScore + 10}</div>
+            )}
             <div className="text-sm text-gray-600">Tổng Điểm</div>
           </div>
           <div className="bg-white rounded-xl p-4 text-center shadow-md">
@@ -175,7 +195,8 @@ const HomePage: React.FC = () => {
                     </div>
                     <div className="text-right">
                       <div className="text-sm text-gray-600">
-                        {result.completedAt.toLocaleDateString('vi-VN')}
+                        {/* ✅ Dùng formatter an toàn thay cho toLocaleDateString trực tiếp */}
+                        {formatVNDate(result.completedAt)}
                       </div>
                     </div>
                   </div>
