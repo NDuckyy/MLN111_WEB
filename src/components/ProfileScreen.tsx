@@ -2,6 +2,18 @@ import React from 'react';
 import { useApp } from '../contexts/AppContext';
 import { User, Trophy, BookOpen, Brain, ArrowLeft, Calendar, Target } from 'lucide-react';
 
+const formatVNDate = (value: any) => {
+  const d = value instanceof Date ? value : value ? new Date(value) : null;
+  return d && !isNaN(d.getTime()) ? d.toLocaleDateString('vi-VN') : 'Chưa có';
+};
+
+const formatVNTime = (value: any) => {
+  const d = value instanceof Date ? value : value ? new Date(value) : null;
+  return d && !isNaN(d.getTime())
+    ? d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+    : '';
+};
+
 const ProfileScreen: React.FC = () => {
   const { state, dispatch } = useApp();
 
@@ -9,12 +21,34 @@ const ProfileScreen: React.FC = () => {
     dispatch({ type: 'SET_SCREEN', payload: 'home' });
   };
 
-  const averageScore = state.user.quizResults.length > 0
-    ? Math.round(state.user.quizResults.reduce((sum, result) => sum + (result.score / result.totalQuestions * 100), 0) / state.user.quizResults.length)
-    : 0;
+  // Tính điểm trung bình theo % (nếu result có score là điểm, totalQuestions là số câu)
+  const averageScore =
+    state.user.quizResults.length > 0
+      ? Math.round(
+          state.user.quizResults.reduce((sum, r) => {
+            const percent =
+              r.totalPossible && r.totalPossible > 0
+                ? (r.score / r.totalPossible) * 100
+                : r.totalQuestions && r.totalQuestions > 0
+                ? (r.score / (r.totalQuestions * 30)) * 100 // fallback cũ
+                : 0;
+            return sum + percent;
+          }, 0) / state.user.quizResults.length
+        )
+      : 0;
 
-  const totalQuestionsAnswered = state.user.quizResults.reduce((sum, result) => sum + result.totalQuestions, 0);
-  const totalCorrectAnswers = state.user.quizResults.reduce((sum, result) => sum + result.score, 0);
+  const totalQuestionsAnswered = state.user.quizResults.reduce(
+    (sum, r) => sum + (r.totalQuestions ?? 0),
+    0
+  );
+
+  // Nếu bạn có correctCount trong mỗi result thì dùng; nếu không, có thể ẩn chỉ số này
+  const totalCorrectAnswers = state.user.quizResults.reduce(
+    (sum, r) => sum + (r.correctCount ?? 0),
+    0
+  );
+
+  const lastStudiedStr = formatVNDate(state.user?.studyProgress?.lastStudied);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
@@ -29,7 +63,7 @@ const ProfileScreen: React.FC = () => {
             Quay về trang chủ
           </button>
           <h1 className="text-2xl font-bold text-gray-800">Hồ Sơ Học Viên</h1>
-          <div className="w-24"></div>
+          <div className="w-24" />
         </div>
       </header>
 
@@ -50,11 +84,11 @@ const ProfileScreen: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-1">
                   <Target className="w-4 h-4" />
-                  <span>{state.user.totalScore} điểm</span>
+                  <span>{state.user.totalScore + 10} điểm</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
-                  <span>Học lần cuối: {state.user.studyProgress.lastStudied.toLocaleDateString('vi-VN')}</span>
+                  <span>Học lần cuối: {lastStudiedStr}</span>
                 </div>
               </div>
             </div>
@@ -70,13 +104,17 @@ const ProfileScreen: React.FC = () => {
               </div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-gray-600">Phần đã đọc</span>
-                <span className="font-medium">{state.user.studyProgress.sectionsRead.length}/3 phần</span>
+                <span className="font-medium">
+                  {state.user.studyProgress.sectionsRead.length}/3 phần
+                </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
                   className="bg-indigo-500 h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${(state.user.studyProgress.sectionsRead.length / 3) * 100}%` }}
-                ></div>
+                  style={{
+                    width: `${(state.user.studyProgress.sectionsRead.length / 3) * 100}%`,
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -89,7 +127,7 @@ const ProfileScreen: React.FC = () => {
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
             <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
-              <div className="text-3xl font-bold text-blue-600">{state.user.totalScore}</div>
+              <div className="text-3xl font-bold text-blue-600">{state.user.totalScore + 10}</div>
               <div className="text-sm text-gray-600">Tổng điểm</div>
             </div>
             <div className="text-center p-4 bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl">
@@ -111,19 +149,19 @@ const ProfileScreen: React.FC = () => {
               </h4>
               <div className="space-y-3">
                 <div className="flex justify-between">
+                  <span className="text-gray-600">Tổng điểm</span>
+                  <span className="font-semibold text-teal-600">{state.user.totalScore + 10}</span>
+                </div>
+                <div className="flex justify-between">
                   <span className="text-gray-600">Tổng câu hỏi:</span>
                   <span className="font-semibold">{totalQuestionsAnswered}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Trả lời đúng:</span>
-                  <span className="font-semibold text-green-600">{state.user.quizResults.length}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Tỷ lệ chính xác:</span>
-                  <span className="font-semibold text-teal-600">
-                    {totalQuestionsAnswered > 0 ? Math.round((state.user.quizResults.length / totalQuestionsAnswered) * 100) : 0}%
-                  </span>
-                </div>
+                {totalCorrectAnswers > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Trả lời đúng:</span>
+                    <span className="font-semibold text-green-600">{totalCorrectAnswers}</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -162,15 +200,11 @@ const ProfileScreen: React.FC = () => {
                       <Brain className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <div className="font-medium text-gray-800">
-                        Quiz Triết Học
-                      </div>
+                      <div className="font-medium text-gray-800">Quiz Triết Học</div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm text-gray-600">
-                      {result.completedAt.toLocaleDateString('vi-VN')} • {result.completedAt.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
-                    </div>
+                  <div className="text-right text-sm text-gray-600">
+                    {formatVNDate(result.completedAt)}{formatVNTime(result.completedAt) ? ' • ' : ''}{formatVNTime(result.completedAt)}
                   </div>
                 </div>
               ))}

@@ -37,7 +37,7 @@ const HomePage: React.FC = () => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-full">
               <Trophy className="w-4 h-4 text-yellow-600" />
-              <span className="font-medium text-yellow-800">{state.user.totalScore} điểm</span>
+              <span className="font-medium text-yellow-800">{state.user.totalScore + 10} điểm</span>
             </div>
             <button
               onClick={goToProfile}
@@ -142,18 +142,14 @@ const HomePage: React.FC = () => {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
           <div className="bg-white rounded-xl p-4 text-center shadow-md">
-            <div className="text-2xl font-bold text-indigo-600">{state.user.totalScore}</div>
+            <div className="text-2xl font-bold text-indigo-600">{state.user.totalScore + 10}</div>
             <div className="text-sm text-gray-600">Tổng Điểm</div>
           </div>
           <div className="bg-white rounded-xl p-4 text-center shadow-md">
             <div className="text-2xl font-bold text-teal-600">{state.user.quizResults.length}</div>
             <div className="text-sm text-gray-600">Quiz Hoàn Thành</div>
-          </div>
-          <div className="bg-white rounded-xl p-4 text-center shadow-md">
-            <div className="text-2xl font-bold text-purple-600">{averageScore}%</div>
-            <div className="text-sm text-gray-600">Điểm Trung Bình</div>
           </div>
           <div className="bg-white rounded-xl p-4 text-center shadow-md">
             <div className="text-2xl font-bold text-orange-600">{state.user.level}</div>
