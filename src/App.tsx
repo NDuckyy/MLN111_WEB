@@ -6,6 +6,7 @@ import StudyMode from './components/StudyMode';
 import QuizMode from './components/QuizMode';
 import QuizScreen from './components/QuizScreen';
 import ProfileScreen from './components/ProfileScreen';
+import AITransparency from './components/AITransparency';
 
 const AppContent: React.FC = () => {
   const { state } = useApp();
@@ -22,6 +23,8 @@ const AppContent: React.FC = () => {
         return state.currentQuiz.length > 0 ? <QuizScreen /> : <QuizMode />;
       case 'profile':
         return <ProfileScreen />;
+      case 'transparency':
+        return <AITransparency />;
       default:
         return <HomePage />;
     }

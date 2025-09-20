@@ -3,7 +3,7 @@ import { User, StudyContent, QuizQuestion, AIResponse } from '../types';
 
 interface AppState {
   user: User;
-  currentScreen: 'welcome' | 'home' | 'study' | 'quiz' | 'profile' | 'results';
+  currentScreen: 'welcome' | 'home' | 'study' | 'quiz' | 'profile' | 'results'| 'transparency';
   currentStudyContent: StudyContent | null;
   currentQuiz: QuizQuestion[];
   currentQuestionIndex: number;

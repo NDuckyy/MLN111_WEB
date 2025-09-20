@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../contexts/AppContext';
-import { BookOpen, Brain, User, Trophy } from 'lucide-react';
+import { BookOpen, Brain, User, Trophy, Eye } from 'lucide-react';
 import { studyContent } from '../data/studyContent';
 
 const HomePage: React.FC = () => {
@@ -25,15 +25,19 @@ const HomePage: React.FC = () => {
     dispatch({ type: 'SET_SCREEN', payload: 'profile' });
   };
 
+  const goToTransparency = () => {
+    dispatch({ type: 'SET_SCREEN', payload: 'transparency' });
+  };
+
   const completionRate = Math.round((state.user.studyProgress.sectionsRead.length / 3) * 100);
   const averageScore =
     state.user.quizResults.length > 0
       ? Math.round(
-          state.user.quizResults.reduce(
-            (sum, result) => sum + (result.score / result.totalQuestions) * 100,
-            0
-          ) / state.user.quizResults.length
-        )
+        state.user.quizResults.reduce(
+          (sum, result) => sum + (result.score / result.totalQuestions) * 100,
+          0
+        ) / state.user.quizResults.length
+      )
       : 0;
 
   return (
@@ -98,7 +102,7 @@ const HomePage: React.FC = () => {
             Học lý thuyết với AI hỗ trợ hoặc kiểm tra kiến thức qua quiz
           </p>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Study Mode Card */}
             <div
               onClick={startStudyMode}
@@ -150,6 +154,33 @@ const HomePage: React.FC = () => {
                   </div>
                   <div className="flex items-center justify-center gap-2">
                     <span>🎯</span> <span>Giải thích từ AI</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              onClick={goToTransparency}
+              className="group bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl p-8 cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-2xl"
+            >
+              <div className="text-center text-white">
+                <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <Eye className="w-10 h-10" />
+                </div>
+                <h3 className="text-2xl font-bold mb-4">AI Transparency</h3>
+                <p className="text-rose-50 mb-6 leading-relaxed">
+                  Tìm hiểu cách chúng tôi sử dụng AI một cách minh bạch, có trách nhiệm
+                  và sáng tạo trong quá trình học tập & phát triển.
+                </p>
+                <div className="bg-white/20 rounded-lg p-4 text-sm">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <span>👁️</span> <span>Minh bạch sử dụng AI</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <span>🛡️</span> <span>Trách nhiệm & liêm chính</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <span>✨</span> <span>Sáng tạo & cộng tác</span>
                   </div>
                 </div>
               </div>
