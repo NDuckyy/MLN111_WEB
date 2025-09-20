@@ -52,7 +52,7 @@ const HomePage: React.FC = () => {
               {state.user.totalScore === 0 ? (
                 <span className="font-medium text-yellow-800">{state.user.totalScore} điểm</span>
               ) : (
-                <span className="font-medium text-yellow-800">{state.user.totalScore + 10} điểm</span>
+                <span className="font-medium text-yellow-800">{state.user.totalScore} điểm</span>
               )}
             </div>
             <button
@@ -163,7 +163,7 @@ const HomePage: React.FC = () => {
             {state.user.totalScore === 0 ? (
               <div className="text-2xl font-bold text-indigo-600">{state.user.totalScore}</div>
             ) : (
-              <div className="text-2xl font-bold text-indigo-600">{state.user.totalScore + 10}</div>
+              <div className="text-2xl font-bold text-indigo-600">{state.user.totalScore}</div>
             )}
             <div className="text-sm text-gray-600">Tổng Điểm</div>
           </div>

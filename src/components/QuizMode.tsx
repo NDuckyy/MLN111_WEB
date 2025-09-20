@@ -59,7 +59,7 @@ const QuizMode: React.FC = () => {
             {state.user.totalScore === 0 ? (
               <span className="font-medium text-teal-800">{state.user.totalScore}</span>
             ) : (
-              <span className="font-medium text-teal-800">{state.user.totalScore + 10}</span>
+              <span className="font-medium text-teal-800">{state.user.totalScore}</span>
             )}
           </div>
         </div>
@@ -199,7 +199,7 @@ const QuizMode: React.FC = () => {
                   {state.user.totalScore === 0 ? (
                     <span className="font-medium text-teal-800">{state.user.totalScore}</span>
                   ) : (
-                    <span className="font-medium text-teal-800">{state.user.totalScore + 10}</span>
+                    <span className="font-medium text-teal-800">{state.user.totalScore}</span>
                   )}
                 </div>
               </div>

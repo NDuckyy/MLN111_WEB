@@ -4,23 +4,21 @@ import { Clock, CheckCircle, XCircle, ArrowRight, Home, Lightbulb } from 'lucide
 
 const QuizScreen: React.FC = () => {
   const { state, dispatch } = useApp();
-  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
+  const [timeLeft, setTimeLeft] = useState(600); // 10 phút
   const [quizComplete, setQuizComplete] = useState(false);
   const [score, setScore] = useState(0);
-  const [correctCount, setCorrectCount] = useState(0); // ✅ thêm state đếm số câu đúng
+  const [correctCount, setCorrectCount] = useState(0);
 
   const currentQuestion = state.currentQuiz[state.currentQuestionIndex];
   const isLastQuestion = state.currentQuestionIndex >= state.currentQuiz.length - 1;
 
   useEffect(() => {
     if (!quizComplete && timeLeft > 0 && state.currentQuiz.length > 0) {
-      const timer = setInterval(() => {
-        setTimeLeft(prev => prev - 1);
-      }, 1000);
+      const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
       return () => clearInterval(timer);
     }
     if (timeLeft === 0 && !quizComplete) {
-      handleQuizComplete();
+      handleQuizComplete(score);
     }
   }, [timeLeft, quizComplete, state.currentQuiz.length]);
 
@@ -45,18 +43,22 @@ const QuizScreen: React.FC = () => {
     } else if (currentQuestion.type === 'true_false') {
       isCorrect = state.selectedAnswer === currentQuestion.correctAnswer;
     } else {
-      // short answer (demo)
+      // short answer demo
       isCorrect = true;
     }
 
+    let newScore = score;
+    let newCorrectCount = correctCount;
+
     if (isCorrect) {
-      setCorrectCount(prev => prev + 1); // ✅ tăng số câu đúng
-      const points = pointsByDifficulty(currentQuestion.difficulty);
-      setScore(prev => prev + points);
+      newCorrectCount += 1;
+      newScore += pointsByDifficulty(currentQuestion.difficulty);
+      setCorrectCount(newCorrectCount);
+      setScore(newScore);
     }
 
     if (isLastQuestion) {
-      handleQuizComplete();
+      handleQuizComplete(newScore);
     } else {
       dispatch({ type: 'NEXT_QUESTION' });
     }
@@ -66,9 +68,12 @@ const QuizScreen: React.FC = () => {
     dispatch({ type: 'SHOW_EXPLANATION' });
   };
 
-  const handleQuizComplete = () => {
+  const handleQuizComplete = (finalScore: number) => {
     setQuizComplete(true);
-    dispatch({ type: 'COMPLETE_QUIZ', payload: { score, total: state.currentQuiz.length } });
+    dispatch({
+      type: 'COMPLETE_QUIZ',
+      payload: { score: finalScore, total: state.currentQuiz.length },
+    });
   };
 
   const goHome = () => {
@@ -79,13 +84,12 @@ const QuizScreen: React.FC = () => {
   const retakeQuiz = () => {
     setQuizComplete(false);
     setScore(0);
-    setCorrectCount(0); // ✅ reset số câu đúng
+    setCorrectCount(0);
     setTimeLeft(600);
     dispatch({ type: 'START_QUIZ', payload: state.currentQuiz });
   };
 
   if (quizComplete) {
-    // ✅ tổng điểm tối đa tính theo độ khó từng câu
     const totalPossible = state.currentQuiz.reduce(
       (sum: number, q: any) => sum + pointsByDifficulty(q.difficulty),
       0
@@ -121,7 +125,7 @@ const QuizScreen: React.FC = () => {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Trả lời đúng:</span>
-              <span className="font-semibold text-green-600">{correctCount}</span> {/* ✅ đúng thật */}
+              <span className="font-semibold text-green-600">{correctCount}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Điểm tối đa có thể đạt:</span>
@@ -164,13 +168,8 @@ const QuizScreen: React.FC = () => {
     );
   }
 
-  const isCorrectAnswer = (index: number | string) => {
-    return index === currentQuestion.correctAnswer;
-  };
-
-  const isSelectedAnswer = (index: number | string) => {
-    return state.selectedAnswer === index;
-  };
+  const isCorrectAnswer = (index: number | string) => index === currentQuestion.correctAnswer;
+  const isSelectedAnswer = (index: number | string) => state.selectedAnswer === index;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 to-green-50 p-4">
@@ -180,7 +179,9 @@ const QuizScreen: React.FC = () => {
           <div className="flex justify-between items-center mb-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-800">Quiz Triết Học</h1>
-              <p className="text-gray-600">Câu {state.currentQuestionIndex + 1} / {state.currentQuiz.length}</p>
+              <p className="text-gray-600">
+                Câu {state.currentQuestionIndex + 1} / {state.currentQuiz.length}
+              </p>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-red-600">
@@ -227,9 +228,7 @@ const QuizScreen: React.FC = () => {
                   : 'Tự luận ngắn'}
               </span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 leading-tight">
-              {currentQuestion.question}
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-800 leading-tight">{currentQuestion.question}</h2>
           </div>
 
           {/* Answer Options */}

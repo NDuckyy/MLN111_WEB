@@ -87,7 +87,7 @@ const ProfileScreen: React.FC = () => {
                   {state.user.totalScore === 0 ? (
                     <span>{state.user.totalScore} điểm</span>
                   ) : (
-                    <span>{state.user.totalScore + 10} điểm</span>
+                    <span>{state.user.totalScore} điểm</span>
                   )
                   }
                 </div>
@@ -135,7 +135,7 @@ const ProfileScreen: React.FC = () => {
               {state.user.totalScore === 0 ? (
                 <div className="text-3xl font-bold text-blue-600">{state.user.totalScore}</div>
               ) : (
-                <div className="text-3xl font-bold text-blue-600">{state.user.totalScore + 10}</div>
+                <div className="text-3xl font-bold text-blue-600">{state.user.totalScore}</div>
               )
               }
               <div className="text-sm text-gray-600">Tổng điểm</div>
@@ -163,7 +163,7 @@ const ProfileScreen: React.FC = () => {
                   {state.user.totalScore === 0 ? (
                     <span className="font-semibold text-teal-600">{state.user.totalScore}</span>
                   ) : (
-                    <span className="font-semibold text-teal-600">{state.user.totalScore + 10}</span>
+                    <span className="font-semibold text-teal-600">{state.user.totalScore}</span>
                   )
                   }
                 </div>
