@@ -56,7 +56,11 @@ const QuizMode: React.FC = () => {
           </div>
           <div className="flex items-center gap-2 bg-teal-100 px-4 py-2 rounded-full">
             <Trophy className="w-4 h-4 text-teal-600" />
-            <span className="font-medium text-teal-800">{state.user.totalScore}</span>
+            {state.user.totalScore === 0 ? (
+              <span className="font-medium text-teal-800">{state.user.totalScore}</span>
+            ) : (
+              <span className="font-medium text-teal-800">{state.user.totalScore + 10}</span>
+            )}
           </div>
         </div>
       </header>
@@ -161,8 +165,8 @@ const QuizMode: React.FC = () => {
                         {question.difficulty === 'easy'
                           ? 'Dễ'
                           : question.difficulty === 'medium'
-                          ? 'Trung bình'
-                          : 'Khó'}
+                            ? 'Trung bình'
+                            : 'Khó'}
                       </span>
                     </div>
                     <p className="text-gray-800 font-medium mb-2">{question.question}</p>
@@ -171,8 +175,8 @@ const QuizMode: React.FC = () => {
                       {question.type === 'multiple_choice'
                         ? 'Trắc nghiệm'
                         : question.type === 'true_false'
-                        ? 'Đúng/Sai'
-                        : 'Tự luận ngắn'}
+                          ? 'Đúng/Sai'
+                          : 'Tự luận ngắn'}
                     </p>
                   </div>
                 ))}
@@ -192,7 +196,11 @@ const QuizMode: React.FC = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Tổng điểm:</span>
-                  <span className="font-bold text-teal-600">{state.user.totalScore}</span>
+                  {state.user.totalScore === 0 ? (
+                    <span className="font-medium text-teal-800">{state.user.totalScore}</span>
+                  ) : (
+                    <span className="font-medium text-teal-800">{state.user.totalScore + 10}</span>
+                  )}
                 </div>
               </div>
             </div>
